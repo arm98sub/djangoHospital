@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block titulo %}Lista de usuarios{% endblock titulo %}
+    
+{% block contenido %}
+<h1>Lista de usuarios</h1>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido paterno</th>
+            <th>Usuario</th>
+            <th>RFC</th>
+            <th>Email</th>
+            <th>Agregar Rol</th>
+            <th>Eliminar Rol</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for usuario in object_list %}
+        <tr>
+            <td>{{usuario.first_name}}</td>
+            <td>{{usuario.last_name}}</td>
+            <td>{{usuario.usuario}}</td>
+            <td>{{usuario.rfc}}</td>
+            <td>{{usuario.email}}</td>
+            <td>                
+                <a title="Administrador" href="{% url 'usuarios:agregarAdmin' usuario.id %}">
+                    <img src="{% static 'dist/img/rocket-outline.svg' %}" class="img-circle elevation-2" alt="Smiley face" width="30" height="30" style="border:1px solid green">
+                </a>
+                <a title="Usuario" href="{% url 'usuarios:agregarUsuario' usuario.id %}">
+                    <img src="{% static 'dist/img/paper-plane-outline.svg' %}" class="img-circle elevation-2" alt="Smiley face" width="30" height="30" style="border:1px solid green">
+                </a>
+            </td>
+
+            <td>                
+                <a title="Administrador" href="{% url 'usuarios:EliminarDeAdmin' usuario.id %}">
+                    <img src="{% static 'dist/img/rocket-outline.svg' %}" class="img-circle elevation-2" alt="Smiley face" width="30" height="30" style="border:1px solid red">
+                </a>
+                <a title="Usuario" href="{% url 'usuarios:EliminarDeUsuarios' usuario.id %}">
+                    <img src="{% static 'dist/img/paper-plane-outline.svg' %}" class="img-circle elevation-2" alt="Smiley face" width="30" height="30" style="border:1px solid red">
+                </a>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    
+
+      
+      {% if messages %}
+
+          
+          {% for message in messages %}
+
+                  <div class="alert alert-{% if message.tags == 'error' %}warning {% else %}success{% endif %} fade show" role="alert">
+                    <strong>{{message}}</strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+            
+          {% endfor %}
+            
+        
+      {% endif %}
+
+        
+
+<nav aria-label="...">
+    <ul class="pagination">
+        
+        {% if page_obj.has_previous %}
+            <li>
+                <a class="page-link" href="?page=1">Firts</a>
+            </li>
+            <li>
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" >Previous</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{{page_obj.previous_page_number}}</a></li>
+        {% endif %}
+
+      <li class="page-item active">
+        <a class="page-link" href="#"> {{ page_obj.number }} <span class="sr-only">(current)</span></a>
+      </li>
+      
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li>
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+  </nav>
+
+{% endblock contenido %}

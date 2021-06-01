@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comfirmar cuenta</title>
+</head>
+<body>
+
+    <div>
+        <h3>Validar cuenta</h3>
+        <p>Hola <b>{{user.username}}</b></p>
+        <p>Para completar tu registro en el hospital debes de entrar en el siguiente enlace:</p>
+        <br>
+        <br>
+        <p><a href="http://{{dominio}}{% url 'usuarios:activar' uidb64=uid token=token %}">Activar cuenta</a></p>
+        <br>
+        <p><i>Saludos!!</i></p>
+    </div>
+    
+</body>
+</html>

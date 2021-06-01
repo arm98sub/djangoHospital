@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    ports: 
+      - '3306:3306'
+    environment: 
+      MYSQL_DATABASE: hospital
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_PASSWORD: root
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
+  web:
+    build: .
+    command: python /app/manage.py migrate --noinput
+    command: python /app/manage.py runserver 0.0.0.0:8080
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=hospital.settings
+
+volumes:
+  db:

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Lista de pacientes{% endblock titulo %}
+    
+{% block contenido %}
+<h1>Lista de pacientes</h1>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido paterno</th>
+            <th>Apellido materno</th>
+            <th>Fecha de nacimiento</th>
+            <th>No. Seguro social</th>
+            <th>Tipo de sangre</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for paciente in object_list %}
+        <tr>
+            <td>{{paciente.nombre}}</td>
+            <td>{{paciente.primerApellido}}</td>
+            <td>{{paciente.segundoApellido}}</td>
+            <td>{{paciente.fecha_nac}}</td>
+            <td>{{paciente.numero_ss}}</td>
+            <td>{{paciente.tipo_sangre}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock contenido %}

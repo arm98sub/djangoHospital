@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+    GRAFICA
+{% endblock titulo %}
+
+{% block contenido %}
+
+    <div id="grafica" style="min-width: 310px; height: 400 px; margin: 0 auto;"></div>
+    <script src="https://code.highcharts.com/highcharts.src.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting_data.js"></script>
+    
+    <script>
+        Highcharts.chart('grafica',{
+            lang:{
+                downloadCSV: 'Descarga CSV',
+                downloadJPEG: 'Descarga imagen JPEG',
+                downloadPDF: 'Descarga PDF',
+                downloadPNG: 'Descarga imagen PNG',
+                downloadSVG: 'Descarga en imagen en vectores',
+                viewFullscreen: 'Ver en pantalla completa',
+                printChart: 'Imprimir grafica',
+            },
+            chart:{
+                type: 'column',
+            },
+            title:{
+                text: 'Grafica de pacientes',
+            },
+            subtitle:{
+                text: 'Cuantos pacientes por municipio',
+            },
+            xAxis:{
+                categorias:['Municipios'],
+            },
+            yAxis:{
+                min: 0,
+                title: {
+                    text: 'Cantidad de pacientes'
+                },
+            },
+            plotOptions:{
+                column:{
+                    pointPadding: 0.2,
+                    borderWidth: 0,
+                },
+            },
+            series: {{datos | safe}}
+        });
+        
+    </script>
+
+{% endblock contenido %}
+    
+    

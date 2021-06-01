@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+    {% if carrito%}
+        Articulos en el Carrito
+    {% else %}
+        Lista de Articulos
+    {% endif %}
+{% endblock titulo %}
+    
+{% block contenido %}
+
+
+<h3>Filtros</h3>
+<label for=""><input type="checkbox" name="" id="">  Categoria </label>
+
+
+
+{% if carrito %}
+    <h1>Artículos en el carrito</h1>
+    <table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Clave</th>
+            <th>Artículo</th>
+            <th>Descripción</th>
+            <th>Imagen 1</th>
+            <th>Imagen 2</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+
+
+        {% for articulo in object_list %}
+        <tr>
+            <td>{{articulo.clave}}</td>
+            <td>{{articulo.nombre}}</td>
+            <td>{{articulo.descripcion}}</td>
+            <td><img src="{{MEDIA_URL}}/{{articulo.imagen}}" width="{% widthratio this_value max_value 100 %}" height="100px"></td>
+            <td><img src="{{MEDIA_URL}}/{{articulo.imagen}}" width="100px" height="100px"></td>
+            <td>${{articulo.precio|floatformat:2}}</td>
+            <td>{{request.session.articulos|dict_key:articulo.id}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    <h3 style="text-align: right" >Cantidad de Articulos: {{request.session.cuantos}}</h3>
+    <h3 style="text-align: right" >Total: {{request.session.total|floatformat:2}}</h3>
+    <div class="btn-group" style="float: right;">
+    <a title="Confirmar compra" class="button type1" style="color: green;"  href="{% url 'articulos:confirmarCompra' %}">
+        <i class="fas fa-money-bill-wave"></i>
+    </a>
+    <a title="Cancelar compra" class="button type1" style="color: red;" style="width:100px;margin:2px" href="{% url 'articulos:cancelarCompra' %}">
+        <i class="fas fa-heart-broken"></i>
+    </a>
+    </div>
+
+
+{% else %}
+
+    <h1>Lista de Artículos</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Clave</th>
+                <th>Artículo</th>
+                <th>Precio</th>
+                <th>Existencia</th>
+                <th>Cantidad</th>
+                <th>Agregar al carro</th>
+                {% if perms.usuarios.permiso_administradores %}
+                    <th>Eliminar articulo</th>
+                {% endif %}
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for articulo in object_list %}
+            <tr>
+                <td>{{articulo.clave}}</td>
+                <td>{{articulo.nombre}}</td>
+                <td>${{articulo.precio}}</td>
+                <td>{{articulo.stock}}</td>
+                <form method="post" action="{% url 'articulos:comprar' articulo.id %}">
+                    {% csrf_token %}
+                    <td>
+                        <input type="number" name="cantidad_articulos" style="width:50px" min="0" max="{{ articulo.stock }}" value="0">
+                    </td>
+                    <td>
+                        {% if articulo.stock > 0 %}
+
+                            <button type="submit" title="Agregar a carrito" class="boton"><i class="fas fa-cart-plus"></i></button>
+                            
+                        {% else %}
+                        
+                
+                            <a href="" class="btn btn-warning" title="sin stock">
+                                <i class="fas fa-frown"></i>
+                            </a>
+                        {% endif %}
+    
+                    </td>
+
+                    {% if perms.usuarios.permiso_administradores %}
+                    
+                        <td>
+                            <a class="boton" style="color: red;" href="javascript:eliminarModal( '{% url 'articulos:eliminar' articulo.id %}' )">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                        
+                    {% endif %}
+
+                </form>
+            </tr>
+            {% endfor %}
+
+
+        </tbody>
+    </table>
+
+{% endif %}
+
+            <!--modal-->
+            <button hidden id="btnModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                Launch demo modal
+            </button>
+
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Elimina articulo</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      ¿Estas seguro de eliminar el articulo? 
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal"><a class="btn btn-secondary" href=""> Cancelar</a></button>
+                      <button type="button" class="btn btn-danger"><a class="btn btn-danger" id="confirmaEliminacion" href=""> Eliminar</a></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--modal-->
+
+
+<nav aria-label="...">
+    <ul class="pagination">
+        
+        {% if page_obj.has_previous %}
+            <li>
+                <a class="page-link" href="?page=1">Firts</a>
+            </li>
+            <li>
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" >Previous</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{{page_obj.previous_page_number}}</a></li>
+        {% endif %}
+
+      <li class="page-item active">
+        <a class="page-link" href="#"> {{ page_obj.number }} <span class="sr-only">(current)</span></a>
+      </li>
+      
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li>
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+  </nav>
+
+  <style>
+    .boton {
+        text-decoration:none;
+        font-weight: 60;
+        font-size: 20px;
+        color:#333333;
+        padding-top:5px;
+        padding-bottom:5px;
+        padding-left:10px;
+        padding-right:10px;
+        background-color:rgba(60, 255, 0, 0.39);
+        border-color: black;
+        border-width: 3px;
+        border-style: solid;
+        border-radius:35px;
+ }
+</style>
+
+  <script>
+    function eliminarModal(url) {
+        document.querySelector("#confirmaEliminacion").setAttribute('href',url);
+        document.querySelector("#btnModal").click()
+    }
+  </script>
+
+<style>
+    @import url("https://fonts.googleapis.com/css?family=Raleway");
+* {
+  box-sizing: border-box;
+}
+.copyright {
+  position: absolute;
+  bottom: 0;
+}
+.copyright a {
+  text-decoration: none;
+  color: #16a085;
+}
+.copyright a:hover {
+  text-decoration: underline;
+}
+
+.button {
+  position: relative;
+  padding: 1em 1.5em;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  outline: none;
+  font-size: 16px;
+  margin: 1em 0.8em;
+}
+.button.type1 {
+  color: #566473;
+}
+.button.type1.type1::after, .button.type1.type1::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 20%;
+  height: 20%;
+  border: 2px solid;
+  transition: all 0.6s ease;
+  border-radius: 2px;
+}
+.button.type1.type1::after {
+  bottom: 0;
+  right: 0;
+  border-top-color: transparent;
+  border-left-color: transparent;
+  border-bottom-color: #566473;
+  border-right-color: #566473;
+}
+.button.type1.type1::before {
+  top: 0;
+  left: 0;
+  border-bottom-color: transparent;
+  border-right-color: transparent;
+  border-top-color: #566473;
+  border-left-color: #566473;
+}
+.button.type1.type1:hover:after, .button.type1.type1:hover:before {
+  width: 100%;
+  height: 100%;
+}
+</style>
+
+{% endblock contenido %}
+    
